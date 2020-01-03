@@ -34,10 +34,14 @@ def main():
         data=de(data1)
         test=data.decode()
         if test[:2]=='cd':
+            # print("Dir is:./"+currentDirectory+""+test.split()[1])
             try:
-                currentDirectory+=test.split()[1]+"/"
-                # print('The current directory is:',currentDirectory)
-                mess='Changed Directory~'
+                if os.path.isdir(currentDirectory+""+test.split()[1]):
+                    currentDirectory+=test.split()[1]+"/"
+                    # print('The current directory is:',currentDirectory)
+                    mess='Changed Directory~'
+                else:
+                    mess="No such dir~"
                 mess=en(mess)
                 s.send(mess)
             except:
