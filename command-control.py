@@ -36,6 +36,7 @@ def main():
         client.send(a)
         r1=client.recv(4096).decode()
         r=de(r1).decode()
+        currentDirectory='./'
         # Extracting the current user name
         username=en('echo $USER')
         client.send(username)
@@ -48,16 +49,22 @@ def main():
         h=de(h1).decode()
         starting='\033[1m ~'+u[:len(u)-2]+'@'+h[:len(h)-2]+':'+r[:len(r)-2]+'$\033[0m'
         # print("Current directory is:",r)
-        c=input(starting)
-        c=en(c)
-        # Sending the encoded command to the remote system
-        client.send(c)
-        res1=client.recv(4096).decode()
-        res=de(res1).decode().split('~')
-        if res[1]:
-            print(res[1])
+        c=input(starting).strip()
+        if not c:
+            print("Please enter the command...")
         else:
-            print(res[0])
+            c=en(c)
+            # Sending the encoded command to the remote system
+            client.send(c)
+            res1=client.recv(4096).decode()
+            res=de(res1).decode()
+            if res:
+                res=res.split('~')
+                if res[1]:
+                    print(res[1])
+                elif res[0]:
+                    print(res[0])
+            
 
 
 
