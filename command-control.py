@@ -47,7 +47,7 @@ def main():
         client.send(hostname)
         h1=client.recv(4096).decode()
         h=de(h1).decode()
-        starting='\033[1m ~'+u[:len(u)-2]+'@'+h[:len(h)-2]+':'+r[:len(r)-2]+'$\033[0m'
+        starting='\033[1m ~'+u[:len(u)-2]+'@'+h[:len(h)-2]+':\x1b[2;36;36m'+r[:len(r)-2]+'$\x1b[0m \033[0m'
         # print("Current directory is:",r)
         c=input(starting).strip()
         if not c:
@@ -64,7 +64,7 @@ def main():
                     print(res[1])
                 elif res[0]:
                     print(res[0])
-            
+
 
 
 
